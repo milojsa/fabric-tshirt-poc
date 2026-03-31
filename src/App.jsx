@@ -1,120 +1,80 @@
-import { useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
+import * as fabric from 'fabric'
+import useStore from './store/useStore'
+import { generateTShirtPath } from './canvas/TShirtPath'
 import './App.css'
 
 function App() {
   const [count, setCount] = useState(0)
 
+  const canvasRef = useRef(null);
+  const fabricRef = useRef(null)
+  const tshirtRef = useRef(null);
+  const { measurements, setChest } = useStore();
+
+  useEffect(()=> {
+    const canvas = new fabric.Canvas(canvasRef.current, {
+      width: 400,
+      height:300,
+      backgroundColor: '#f5f5f5',
+    })
+    fabricRef.current = canvas
+
+    const pathString = generateTShirtPath(measurements.chest);
+    const tshirt = new fabric.Path(pathString, {
+      fill: '#3498db',
+      stroke: '#2c3e50',
+      strokeWidth: 2,
+      selectable: false,
+    }, []);
+    tshirtRef.current = tshirt;
+    canvas.add(tshirt);
+    canvas.renderAll();
+
+    return () => canvas.dispose();
+  })
+
+  useEffect(() => {
+    if (!fabricRef.current || !tshirtRef.current) return
+    const newPath = generateTShirtPath(measurements.chest)
+
+    requestAnimationFrame(() => {
+      const pathData = fabric.util.parsePath(newPath);
+      tshirtRef.current.set({ path: pathData });
+      fabricRef.current.renderAll();
+    })
+  }, [measurements.chest])
+
+  const handleSliderChange = (e) => {
+    
+  };
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <div className="app">
+      <h1>Parametric T-Shirt Builder</h1>
+      
+      <div className="controls">
+        <label>
+          Chest: <strong>{measurements.chest} cm</strong>
+          <input
+            type="range"
+            min="80"
+            max="130"
+            value={measurements.chest}
+            onChange={handleSliderChange}
+          />
+        </label>
+      </div>
 
-      <div className="ticks"></div>
+      <canvas ref={canvasRef} />
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+      <div className="json-output">
+        <h3>JSON State (Freesewing Brian compatible)</h3>
+        <pre>{JSON.stringify({ measurements }, null, 2)}</pre>
+      </div>
+    </div>
   )
 }
 
