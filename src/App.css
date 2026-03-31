@@ -1,5 +1,5 @@
 .app {
-  max-width: 500px;
+  max-width: 650px;
   margin: 0 auto;
   padding: 20px;
   font-family: system-ui, sans-serif;
@@ -25,9 +25,54 @@ h1 {
   cursor: pointer;
 }
 
+.canvas-area {
+  display: flex;
+  gap: 15px;
+  align-items: flex-start;
+}
+
 canvas {
   border: 1px solid #ddd;
   border-radius: 4px;
+}
+
+.color-panel {
+  background: #2a2a2a;
+  border-radius: 8px;
+  padding: 12px;
+  min-width: 100px;
+}
+
+.color-panel h3 {
+  margin: 0 0 10px;
+  font-size: 0.85rem;
+  color: #ccc;
+  text-align: center;
+}
+
+.color-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.color-swatch {
+  width: 36px;
+  height: 36px;
+  border: 2px solid #444;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform 0.15s, border-color 0.15s;
+}
+
+.color-swatch:hover {
+  transform: scale(1.1);
+  border-color: #888;
+}
+
+.color-swatch.active {
+  border-color: #3498db;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.4);
 }
 
 .json-output {
