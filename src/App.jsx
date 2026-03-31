@@ -1,15 +1,10 @@
 import { useRef, useState, useEffect } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
 import * as fabric from 'fabric'
 import useStore from './store/useStore'
 import { generateTShirtPath } from './canvas/TShirtPath'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
-
   const canvasRef = useRef(null);
   const fabricRef = useRef(null)
   const tshirtRef = useRef(null);
@@ -49,7 +44,7 @@ function App() {
   }, [measurements.chest])
 
   const handleSliderChange = (e) => {
-    
+    setChest(Number(e.target.value));
   };
   return (
     <div className="app">
