@@ -7,8 +7,8 @@ export function generateTShirtPath(chest) {
   const bodyWidth = 75 * scale;
   const bodyHeight = 230 * scale;
   const shoulderWidth = 70 * scale;
-  const neckWidth = 30 * scale;
-  const neckDepth = 25 * scale;
+  const neckWidth = 40 * scale;
+  const neckDepth = 45 * scale;
   const sleeveOuterLength = 50 * scale;
   const sleeveDropAngle = 45 * scale;
   const hemWidth = 90 * scale;
