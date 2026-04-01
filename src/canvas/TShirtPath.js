@@ -6,22 +6,24 @@ export function generateTShirtPath(chest) {
   const cy = 25;
 
   // === FIXED dimensions (locked) ===
-  const bodyHeight = 230;
+  const bodyHeight = 250;
   const shoulderWidth = 70;
   const neckWidth = 40;
   const neckDepth = 45;
-  const sleeveOuterLength = 50;
+  const sleeveOuterLength = 40;
   const sleeveDropAngle = 55;
   const shoulderY = cy + 10;
   const hemWidth = 70;    // fixed hem width
   
-  // Sleeve positions
-  const sleeveOuterX = shoulderWidth + sleeveOuterLength;
+  // Sleeve positions - both edges move together to keep sleeve width constant
+  const sleeveMove = chestOffset * 0.5;  // how much the entire sleeve shifts
+  const baseSleeveOuterX = shoulderWidth + sleeveOuterLength;
+  const sleeveOuterX = baseSleeveOuterX + sleeveMove;
   const sleeveOuterY = shoulderY + sleeveDropAngle;
   
-  // === DYNAMIC: sleeve inner edge moves with chest ===
+  // === DYNAMIC: sleeve inner edge moves same amount as outer ===
   const baseSleeveCuffX = 73;
-  const sleeveCuffX = baseSleeveCuffX + chestOffset * 1;  // sleeve inner moves out/in
+  const sleeveCuffX = baseSleeveCuffX + sleeveMove;  // same shift amount
   const sleeveCuffY = sleeveOuterY + 20;
   
   // === KEY VERTICAL POSITIONS ===
@@ -31,13 +33,13 @@ export function generateTShirtPath(chest) {
   const midpointY = (chestY + hemY) / 2;
   
   // === DYNAMIC: chest width ===
-  const baseChestWidth = 75;
+  const baseChestWidth = 65;
   const chestWidth = baseChestWidth + chestOffset;
   
   // Midpoint width - interpolate smoothly between chest and hem
   const midpointWidth = (chestWidth + hemWidth) / 2 - 2;  // slight inward curve
 
-  // Build path - one smooth curve from armpit to hem using connected beziers
+  // Build path - straight line armpit to chest, then smooth curve to hem
   const path = `
     M ${cx - neckWidth} ${cy}
     
@@ -52,32 +54,20 @@ export function generateTShirtPath(chest) {
     Q ${cx + sleeveOuterX + 3} ${sleeveOuterY + 12}
       ${cx + sleeveCuffX} ${sleeveCuffY}
     
-    C ${cx + sleeveCuffX + 4} ${armpitY + 12}
-      ${cx + chestWidth + 3} ${chestY - 8}
-      ${cx + chestWidth} ${chestY}
+    L ${cx + chestWidth} ${chestY}
     
-    C ${cx + chestWidth - 1} ${chestY + 35}
-      ${cx + midpointWidth} ${midpointY - 20}
-      ${cx + midpointWidth} ${midpointY}
-    
-    C ${cx + midpointWidth} ${midpointY + 30}
-      ${cx + hemWidth - 2} ${hemY - 25}
+    C ${cx + chestWidth} ${midpointY - 15}
+      ${cx + hemWidth - 5} ${midpointY + 15}
       ${cx + hemWidth} ${hemY}
     
     Q ${cx} ${hemY + 8}
       ${cx - hemWidth} ${hemY}
     
-    C ${cx - hemWidth + 2} ${hemY - 25}
-      ${cx - midpointWidth} ${midpointY + 30}
-      ${cx - midpointWidth} ${midpointY}
-    
-    C ${cx - midpointWidth} ${midpointY - 20}
-      ${cx - chestWidth + 1} ${chestY + 35}
+    C ${cx - hemWidth + 5} ${midpointY + 15}
+      ${cx - chestWidth} ${midpointY - 15}
       ${cx - chestWidth} ${chestY}
     
-    C ${cx - chestWidth - 3} ${chestY - 8}
-      ${cx - sleeveCuffX - 4} ${armpitY + 12}
-      ${cx - sleeveCuffX} ${sleeveCuffY}
+    L ${cx - sleeveCuffX} ${sleeveCuffY}
     
     Q ${cx - sleeveOuterX - 3} ${sleeveOuterY + 12}
       ${cx - sleeveOuterX} ${sleeveOuterY}
